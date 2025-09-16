@@ -1,1 +1,1 @@
-This is a Golang project where you can use a CLI to gather information from WeatherAPI about the forecast of your current location. 
+This is a Golang project where you can use a CLI to gather information from WeatherAPI about the forecast of your current location. You can modify the query attr with the command flags and it will be displayed the forecast of the moment and the prediction of every hour.

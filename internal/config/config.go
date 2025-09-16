@@ -2,8 +2,11 @@
 package config
 
 import (
+	"log"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -16,6 +19,12 @@ type Config struct {
 }
 
 func FromEnv() Config {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found or failed to load")
+	}
+
 	apiKey := os.Getenv("WEATHER_API_KEY")
 	if apiKey == "" {
 		// you may decide to return empty and error later if not provided via flag
