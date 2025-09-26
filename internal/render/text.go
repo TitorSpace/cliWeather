@@ -136,7 +136,7 @@ func RenderHeader(w *weatherapi.Weather, out io.Writer, opt Options) {
 	t := time.Unix(int64(w.Current.LastUpdatedEpoch), 0).Local().Format("Mon 02 Jan 2006 15:04:05 MST")
 
 	_, _ = fmt.Fprintf(out, "%s%s %s\n",
-		em(opt.Emoji, "📍")+th.header("¡Buen día!"),
+		em(opt.Emoji, "📍")+th.header("¡Buen día! "),
 		th.bold(loc),
 		"",
 	)
