@@ -20,6 +20,8 @@ var (
 	flagDebug    bool
 	flagDayIndex int
 	flagJSON     bool
+	flagUnits    string
+	flagHours    string
 )
 
 var forecastCmd = &cobra.Command{
@@ -69,7 +71,16 @@ var forecastCmd = &cobra.Command{
 		// Determinar opciones de salida
 		useColor := !noColor && !envNoColor() && isTerminal(os.Stdout)
 		useEmoji := !noEmoji // (podrías condicionar por OS o TTY si quisieras)
-		opt := render.Options{Color: useColor, Emoji: useEmoji}
+		opt := render.Options{
+			Color: useColor,
+			Emoji: useEmoji,
+			Units: render.ParseUnits(flagUnits),
+		}
+		hr, err := render.ParseHourRange(flagHours)
+		if err != nil {
+			return fmt.Errorf("invalid --hours: %w", err)
+		}
+		opt.HourRange = hr
 
 		// Encabezado general y render del/los días
 		render.RenderHeader(w, os.Stdout, opt)
@@ -90,4 +101,6 @@ func init() {
 	forecastCmd.Flags().BoolVar(&flagDebug, "debug", false, "Print raw structs for debugging")
 	forecastCmd.Flags().IntVar(&flagDayIndex, "day-index", -1, "Show only this forecast day index (0..days-1)")
 	forecastCmd.Flags().BoolVar(&flagJSON, "json", false, "Print raw JSON response")
+	forecastCmd.Flags().StringVarP(&flagUnits, "units", "u", "", "Units: metric|imperial")
+	forecastCmd.Flags().StringVar(&flagHours, "hours", "", "Filter hours range, e.g. 08-18 (local time)")
 }

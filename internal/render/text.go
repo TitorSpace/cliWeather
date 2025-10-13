@@ -10,9 +10,20 @@ import (
 
 // Options controla cómo se muestra el texto
 type Options struct {
-	Color bool
-	Emoji bool
+	Color     bool
+	Emoji     bool
+	Units     Units
+	HourRange *HourRange
 }
+
+type Units int
+
+type HourRange struct{ Start, End int }
+
+const (
+	UnitsMetric Units = iota
+	UnitsImperial
+)
 
 // ======= Tema de colores ANSI =======
 
@@ -29,6 +40,40 @@ type theme struct {
 	ok     func(string) string
 	warn   func(string) string
 }
+
+func ParseUnits(s string) Units {
+	switch strings.ToLower(s) {
+	case "imperial", "imp", "us":
+		return UnitsImperial
+	default:
+		return UnitsMetric
+	}
+}
+
+func ParseHourRange(s string) (*HourRange, error) {
+	if strings.TrimSpace(s) == "" {
+		return nil, nil
+	}
+	var a, b int
+	if _, err := fmt.Sscanf(s, "%d-%d", &a, &b); err != nil {
+		return nil, fmt.Errorf("expected HH-HH, got %q", s)
+	}
+	if a < 0 || a > 23 || b < 0 || b > 23 || a > b {
+		return nil, fmt.Errorf("invalid hour range %d-%d", a, b)
+	}
+	return &HourRange{Start: a, End: b}, nil
+}
+
+func hourInRange(t time.Time, hr *HourRange) bool {
+	if hr == nil {
+		return true
+	}
+	h := t.Hour()
+	return h >= hr.Start && h <= hr.End
+}
+
+func cToF(c float64) float64       { return c*9.0/5.0 + 32.0 }
+func kphToMph(kph float64) float64 { return kph * 0.621371 }
 
 func makeTheme(enable bool) theme {
 	if !enable {
@@ -109,9 +154,26 @@ func tempColor(th theme, c float64) func(string) string {
 	}
 }
 
-func fmtTemp(th theme, c float64) string {
-	color := tempColor(th, c)
-	return color(fmt.Sprintf("%.0f°C", c))
+// Temperatura coloreada + unidades
+func fmtTemp(th theme, c float64, opt Options) string {
+	val := c
+	unit := "°C"
+	if opt.Units == UnitsImperial {
+		val = cToF(c)
+		unit = "°F"
+	}
+	color := tempColor(th, c) // color por temperatura real en °C
+	return color(fmt.Sprintf("%.0f%s", val, unit))
+}
+
+func fmtWind(th theme, kph float64, opt Options) string {
+	val := kph
+	unit := "km/h"
+	if opt.Units == UnitsImperial {
+		val = kphToMph(kph)
+		unit = "mph"
+	}
+	return th.value(fmt.Sprintf("%.0f %s", val, unit))
 }
 
 // Si ChanceOfRain es int en tus tipos, cambia la firma a (th theme, p int) string
@@ -206,15 +268,18 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	// Resumen del día
 
 	_, _ = fmt.Fprintf(out, "%s%s %s\n", iconCond+th.label("Hoy:"), "", th.value(conditionText))
+
 	_, _ = fmt.Fprintf(out, "  %s%s  %s  %s%s  %s  %s%s  %s\n",
-		iconMax, th.label("max:"), fmtTemp(th, fd.Day.MaxtempC),
-		iconAvg, th.label("avg:"), fmtTemp(th, avg),
-		iconMin, th.label("min:"), fmtTemp(th, fd.Day.MintempC),
+		iconMax, th.label("max:"), fmtTemp(th, fd.Day.MaxtempC, opt),
+		iconAvg, th.label("avg:"), fmtTemp(th, avg, opt),
+		iconMin, th.label("min:"), fmtTemp(th, fd.Day.MintempC, opt),
 	)
+
 	_, _ = fmt.Fprintf(out, "  %s%s %s  %s%s %s\n",
-		iconWind, th.label("viento:"), th.value(fmt.Sprintf("%.0f km/h", w.Current.WindKph)),
+		iconWind, th.label("viento:"), fmtWind(th, w.Current.WindKph, opt),
 		iconHum, th.label("humedad:"), th.value(fmt.Sprintf("%d%%", w.Current.Humidity)),
 	)
+
 	_, _ = fmt.Fprintf(out, "  %s%s %s  %s%s %s\n\n",
 		iconSunrise, th.label("amanecer:"), th.value(fd.Astro.Sunrise),
 		iconSunset, th.label("atardecer:"), th.value(fd.Astro.Sunset),
@@ -224,13 +289,16 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	umbrella := em(opt.Emoji, "☔️")
 	for _, hour := range fd.Hour {
 		tm := time.Unix(int64(hour.TimeEpoch), 0).Local()
+		if !hourInRange(tm, opt.HourRange) {
+			continue
+		}
 		hhmm := tm.Format("15:04")
 		condEm := pickConditionEmoji(opt.Emoji, hour.Condition.Text)
 
 		// Construimos cada parte ya coloreada
 		timePart := th.dim(hhmm)
 		condPart := condEm + th.value(hour.Condition.Text)
-		tempPart := fmtTemp(th, hour.TempC)
+		tempPart := fmtTemp(th, hour.TempC, opt)
 		rainPart := umbrella + fmtPercent(th, hour.ChanceOfRain)
 
 		_, _ = fmt.Fprintf(out, "%s %s - %s, %s\n", timePart, condPart, tempPart, rainPart)
