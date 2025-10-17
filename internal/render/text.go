@@ -3,9 +3,10 @@ package render
 import (
 	"fmt"
 	"io"
-	"mruiz/cliWeather/internal/api/weatherapi"
 	"strings"
 	"time"
+
+	"mruiz/cliWeather/internal/api/weatherapi"
 )
 
 // Options controla cómo se muestra el texto

@@ -13,24 +13,24 @@ var completionCmd = &cobra.Command{
 	Long: `Genera autocompletado para cliweather.
 
 Bash:
-  source <(cliweather completion bash)
-  # persistente:
-  cliweather completion bash > /etc/bash_completion.d/cliweather  (root)
-  # o: cliweather completion bash > ~/.local/share/bash-completion/cliweather
+	source <(cliweather completion bash)
+	# persistente:
+	cliweather completion bash > /etc/bash_completion.d/cliweather  (root)
+	# o: cliweather completion bash > ~/.local/share/bash-completion/cliweather
 
 Zsh:
-  echo 'autoload -U compinit; compinit' >> ~/.zshrc
-  cliweather completion zsh > "${fpath[1]}/_cliweather"   # requiere $fpath writable
-  # o: mkdir -p ~/.zsh/completions && cliweather completion zsh > ~/.zsh/completions/_cliweather
-  #    y añade a ~/.zshrc: fpath=(~/.zsh/completions $fpath)
+	echo 'autoload -U compinit; compinit' >> ~/.zshrc
+	cliweather completion zsh > "${fpath[1]}/_cliweather"   # requiere $fpath writable
+	# o: mkdir -p ~/.zsh/completions && cliweather completion zsh > ~/.zsh/completions/_cliweather
+	#    y añade a ~/.zshrc: fpath=(~/.zsh/completions $fpath)
 
 Fish:
-  cliweather completion fish > ~/.config/fish/completions/cliweather.fish
+	cliweather completion fish > ~/.config/fish/completions/cliweather.fish
 
 PowerShell:
-  cliweather completion powershell | Out-String | Invoke-Expression
-  # persistente:
-  cliweather completion powershell > $PROFILE
+	cliweather completion powershell | Out-String | Invoke-Expression
+	# persistente:
+	cliweather completion powershell > $PROFILE
 `,
 	Args: cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	ValidArgs: []string{

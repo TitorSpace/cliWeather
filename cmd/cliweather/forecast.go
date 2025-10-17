@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"mruiz/cliWeather/internal/api/weatherapi"
 	"mruiz/cliWeather/internal/config"
 	"mruiz/cliWeather/internal/render"
-	"os"
 
 	"github.com/spf13/cobra"
 )

@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"mruiz/cliWeather/internal/api/weatherapi"
 	"strings"
 	"testing"
 	"time"
+
+	"mruiz/cliWeather/internal/api/weatherapi"
 )
 
 // containsANSI detecta secuencias ANSI básicas
