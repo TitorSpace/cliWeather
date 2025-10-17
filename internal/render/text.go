@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"mruiz/cliWeather/internal/api/weatherapi"
+	"cliWeather/internal/api/weatherapi"
 )
 
 // Options controla cómo se muestra el texto
@@ -26,7 +26,7 @@ const (
 	UnitsImperial
 )
 
-// ======= Tema de colores ANSI =======
+// ======= ANSI COLORS THEME =======
 
 type theme struct {
 	reset string
@@ -141,9 +141,9 @@ func pickConditionEmoji(enabled bool, text string) string {
 	}
 }
 
-// ======= Helpers de formateo =======
+// ======= Formatting helpers =======
 
-// tempColor elige el color según temperatura (Celsius)
+// tempColor chooses the color according to the temperature (Celsius)
 func tempColor(th theme, c float64) func(string) string {
 	switch {
 	case c >= 30:
@@ -155,7 +155,7 @@ func tempColor(th theme, c float64) func(string) string {
 	}
 }
 
-// Temperatura coloreada + unidades
+// Colored temp = units
 func fmtTemp(th theme, c float64, opt Options) string {
 	val := c
 	unit := "°C"
@@ -163,7 +163,7 @@ func fmtTemp(th theme, c float64, opt Options) string {
 		val = cToF(c)
 		unit = "°F"
 	}
-	color := tempColor(th, c) // color por temperatura real en °C
+	color := tempColor(th, c)
 	return color(fmt.Sprintf("%.0f%s", val, unit))
 }
 
@@ -177,7 +177,6 @@ func fmtWind(th theme, kph float64, opt Options) string {
 	return th.value(fmt.Sprintf("%.0f %s", val, unit))
 }
 
-// Si ChanceOfRain es int en tus tipos, cambia la firma a (th theme, p int) string
 func fmtPercent(th theme, p float64) string {
 	var apply func(string) string
 	switch {
@@ -199,12 +198,12 @@ func RenderHeader(w *weatherapi.Weather, out io.Writer, opt Options) {
 	t := time.Unix(int64(w.Current.LastUpdatedEpoch), 0).Local().Format("Mon 02 Jan 2006 15:04:05 MST")
 
 	_, _ = fmt.Fprintf(out, "%s%s %s\n",
-		em(opt.Emoji, "📍")+th.header("¡Buen día! "),
+		em(opt.Emoji, "📍")+th.header("¡Good day! "),
 		th.bold(loc),
 		"",
 	)
 	_, _ = fmt.Fprintf(out, "%s%s %s\n",
-		em(opt.Emoji, "📅"), th.label("Fecha:"), th.value(t),
+		em(opt.Emoji, "📅"), th.label("Date:"), th.value(t),
 	)
 }
 
@@ -231,7 +230,7 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	}
 	fd := w.Forecast.Forecastday[idx]
 
-	// Fecha del bloque
+	// Block date
 	headerTime := time.Now().Local()
 	if len(fd.Hour) > 0 {
 		headerTime = time.Unix(int64(fd.Hour[0].TimeEpoch), 0).Local()
@@ -239,14 +238,13 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	dayTitle := fmt.Sprintf("%s (día %d/%d)", headerTime.Format("Mon 02 Jan 2006"), idx+1, total)
 	_, _ = fmt.Fprintf(out, "\n%s %s\n", th.bold("==="), th.bold(th.header(dayTitle)))
 
-	// Condición representativa
 	conditionText := w.Current.Condition.Text
 	if len(fd.Hour) > 0 {
 		mid := len(fd.Hour) / 2
 		conditionText = fd.Hour[mid].Condition.Text
 	}
 
-	// Media del día por horas
+	// Average of the day
 	avg := w.Current.TempC
 	if len(fd.Hour) > 0 {
 		var sum float64
@@ -256,7 +254,7 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 		avg = sum / float64(len(fd.Hour))
 	}
 
-	// Iconos
+	// Emojis
 	iconCond := pickConditionEmoji(opt.Emoji, conditionText)
 	iconMax := em(opt.Emoji, "🔺")
 	iconAvg := em(opt.Emoji, "📊")
@@ -266,9 +264,7 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	iconSunrise := em(opt.Emoji, "🌅")
 	iconSunset := em(opt.Emoji, "🌇")
 
-	// Resumen del día
-
-	_, _ = fmt.Fprintf(out, "%s%s %s\n", iconCond+th.label("Hoy:"), "", th.value(conditionText))
+	_, _ = fmt.Fprintf(out, "%s%s %s\n", iconCond+th.label("Today:"), "", th.value(conditionText))
 
 	_, _ = fmt.Fprintf(out, "  %s%s  %s  %s%s  %s  %s%s  %s\n",
 		iconMax, th.label("max:"), fmtTemp(th, fd.Day.MaxtempC, opt),
@@ -277,13 +273,13 @@ func RenderDay(w *weatherapi.Weather, idx, total int, out io.Writer, opt Options
 	)
 
 	_, _ = fmt.Fprintf(out, "  %s%s %s  %s%s %s\n",
-		iconWind, th.label("viento:"), fmtWind(th, w.Current.WindKph, opt),
-		iconHum, th.label("humedad:"), th.value(fmt.Sprintf("%d%%", w.Current.Humidity)),
+		iconWind, th.label("wind:"), fmtWind(th, w.Current.WindKph, opt),
+		iconHum, th.label("humidity:"), th.value(fmt.Sprintf("%d%%", w.Current.Humidity)),
 	)
 
 	_, _ = fmt.Fprintf(out, "  %s%s %s  %s%s %s\n\n",
-		iconSunrise, th.label("amanecer:"), th.value(fd.Astro.Sunrise),
-		iconSunset, th.label("atardecer:"), th.value(fd.Astro.Sunset),
+		iconSunrise, th.label("sunrise:"), th.value(fd.Astro.Sunrise),
+		iconSunset, th.label("sunset:"), th.value(fd.Astro.Sunset),
 	)
 
 	// Horas

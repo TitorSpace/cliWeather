@@ -13,7 +13,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:           "cliweather",
-	Short:         "CLI del tiempo sencilla y práctica",
+	Short:         "Easy to use weather CLI",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
@@ -25,15 +25,13 @@ func Execute() {
 }
 
 func init() {
-	// Flags persistentes disponibles para todos los subcomandos
-	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Desactivar colores ANSI en la salida")
-	rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Desactivar emojis en la salida")
+	// Persistent flags
+	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable ANSI colors")
+	rootCmd.PersistentFlags().BoolVar(&noEmoji, "no-emoji", false, "Disable emojis")
 }
 
-// ===== Helpers de entorno para color/emoji =====
-
 func envNoColor() bool {
-	// Estándar NO_COLOR: https://no-color.org/
+	// NO_COLOR standard: https://no-color.org/
 	return os.Getenv("NO_COLOR") != ""
 }
 
@@ -42,6 +40,5 @@ func isTerminal(f *os.File) bool {
 	if err != nil {
 		return false
 	}
-	// Si es un dispositivo de carácter, asumimos TTY
 	return (fi.Mode() & os.ModeCharDevice) != 0
 }

@@ -9,8 +9,8 @@ import (
 
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish|powershell]",
-	Short: "Genera el script de autocompletado para tu shell",
-	Long: `Genera autocompletado para cliweather.
+	Short: "Shell script",
+	Long: `It generates an auto-completed script for your shell.
 
 Bash:
 	source <(cliweather completion bash)
@@ -20,9 +20,9 @@ Bash:
 
 Zsh:
 	echo 'autoload -U compinit; compinit' >> ~/.zshrc
-	cliweather completion zsh > "${fpath[1]}/_cliweather"   # requiere $fpath writable
+	cliweather completion zsh > "${fpath[1]}/_cliweather"   # requires $fpath writable
 	# o: mkdir -p ~/.zsh/completions && cliweather completion zsh > ~/.zsh/completions/_cliweather
-	#    y añade a ~/.zshrc: fpath=(~/.zsh/completions $fpath)
+	#    and adds ~/.zshrc: fpath=(~/.zsh/completions $fpath)
 
 Fish:
 	cliweather completion fish > ~/.config/fish/completions/cliweather.fish
@@ -42,7 +42,6 @@ PowerShell:
 		case "bash":
 			return rootCmd.GenBashCompletion(os.Stdout)
 		case "zsh":
-			// Cobra recomienda head para zsh
 			fmt.Fprintln(os.Stdout, "#compdef cliweather")
 			return rootCmd.GenZshCompletion(os.Stdout)
 		case "fish":
@@ -50,7 +49,7 @@ PowerShell:
 		case "powershell":
 			return rootCmd.GenPowerShellCompletionWithDesc(os.Stdout)
 		default:
-			return fmt.Errorf("unsupported shell: %s", shell)
+			return fmt.Errorf("Unsupported shell: %s", shell)
 		}
 	},
 }

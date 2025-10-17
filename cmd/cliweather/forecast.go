@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"mruiz/cliWeather/internal/api/weatherapi"
-	"mruiz/cliWeather/internal/config"
-	"mruiz/cliWeather/internal/render"
+	"cliWeather/internal/api/weatherapi"
+	"cliWeather/internal/config"
+	"cliWeather/internal/render"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,7 @@ var (
 
 var forecastCmd = &cobra.Command{
 	Use:   "forecast",
-	Short: "Muestra la previsión meteorológica",
+	Short: "Displays the weather forecast",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg := config.FromEnv()
 
@@ -62,14 +62,13 @@ var forecastCmd = &cobra.Command{
 			return nil
 		}
 
-		// Salida JSON cruda si se pide
+		// Raw JSON output if needed
 		if flagJSON {
 			enc := json.NewEncoder(os.Stdout)
 			enc.SetIndent("", "  ")
 			return enc.Encode(w)
 		}
 
-		// Determinar opciones de salida
 		useColor := !noColor && !envNoColor() && isTerminal(os.Stdout)
 		useEmoji := !noEmoji // (podrías condicionar por OS o TTY si quisieras)
 		opt := render.Options{
@@ -83,7 +82,7 @@ var forecastCmd = &cobra.Command{
 		}
 		opt.HourRange = hr
 
-		// Encabezado general y render del/los días
+		// General header + rendered days
 		render.RenderHeader(w, os.Stdout, opt)
 		if flagDayIndex >= 0 {
 			return render.RenderDay(w, flagDayIndex, len(w.Forecast.Forecastday), os.Stdout, opt)
@@ -97,7 +96,7 @@ func init() {
 
 	forecastCmd.Flags().StringVarP(&flagCity, "city", "c", "Vigo", "City name or query")
 	forecastCmd.Flags().IntVarP(&flagDays, "days", "d", 1, "Forecast days (1-3 on free tier)")
-	forecastCmd.Flags().StringVarP(&flagLang, "lang", "l", "", "Language (e.g., es, en, fr)")
+	forecastCmd.Flags().StringVarP(&flagLang, "lang", "l", "en", "Language (e.g., es, en, fr)")
 	forecastCmd.Flags().StringVar(&flagAPIKey, "apikey", "", "WeatherAPI key (or set WEATHER_API_KEY)")
 	forecastCmd.Flags().BoolVar(&flagDebug, "debug", false, "Print raw structs for debugging")
 	forecastCmd.Flags().IntVar(&flagDayIndex, "day-index", -1, "Show only this forecast day index (0..days-1)")

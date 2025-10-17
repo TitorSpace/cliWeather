@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 )
-
-const baseURL = "https://api.weatherapi.com/v1/forecast.json"
 
 type Client struct {
 	http    *http.Client
@@ -29,7 +28,7 @@ func NewClient(apikey, lang string, timeout time.Duration) *Client {
 }
 
 func (c *Client) Forecast(ctx context.Context, query string, days int, aqi, alerts bool) (*Weather, error) {
-	u, _ := url.Parse(baseURL)
+	u, _ := url.Parse(os.Getenv("BASE_URL"))
 	q := u.Query()
 	q.Set("key", c.apiKey)
 	q.Set("q", query)
@@ -43,7 +42,8 @@ func (c *Client) Forecast(ctx context.Context, query string, days int, aqi, aler
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "weather-cli/1.0 (+github.com/titorspace/cliweather)")
+	// Uncomment next line in case the provider requires acustom User-Agent
+	// req.Header.Set("User-Agent", "weather-cli/1.0 (+github.com/username/cliweather)")
 
 	resp, err := c.http.Do(req)
 	if err != nil {

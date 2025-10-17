@@ -18,6 +18,18 @@ type Config struct {
 	CacheTTL    time.Duration
 }
 
+type ForecastFlags struct {
+	FlagCity     string
+	FlagDays     int
+	FlagLang     string
+	FlagAPIKey   string
+	FlagDebug    bool
+	FlagDayIndex int
+	FlagJSON     bool
+	FlagUnits    string
+	FlagHours    string
+}
+
 func FromEnv() Config {
 	err := godotenv.Load()
 	if err != nil {

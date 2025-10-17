@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
-	"mruiz/cliWeather/internal/api/weatherapi"
+	"cliWeather/internal/api/weatherapi"
 )
 
-// containsANSI detecta secuencias ANSI básicas
+// containsANSI detects basic ANSI seqs
 func containsANSI(s string) bool {
 	return strings.Contains(s, "\x1b[")
 }
 
-// containsAnyEmoji detecta si hay al menos uno de estos emojis comunes que usamos
+// containsAnyEmoji detects whether at least there are one of these emojis
 func containsAnyEmoji(s string) bool {
 	emojis := []string{"☀️", "⛅️", "☁️", "🌧️", "⛈️", "❄️", "🌫️", "💨", "🌅", "🌇", "☔️"}
 	for _, e := range emojis {
@@ -31,7 +31,7 @@ func TestRender_NoColorNoEmoji(t *testing.T) {
 	now := time.Now().Unix()
 
 	var w weatherapi.Weather
-	// Construimos el objeto con JSON para evitar incompatibilidades de structs anónimos.
+	// Let's build a json output example of the API query
 	payload := fmt.Sprintf(`{
       "location": {"name":"Vigo","country":"Spain"},
       "current": {
@@ -82,7 +82,7 @@ func TestRender_NoColorNoEmoji(t *testing.T) {
 
 	out := buf.String()
 
-	// No debe haber secuencias ANSI ni emojis
+	// There should not be ANSI seq nor emojis
 	if containsANSI(out) {
 		t.Fatalf("expected no ANSI sequences, got:\n%s", out)
 	}
@@ -90,14 +90,13 @@ func TestRender_NoColorNoEmoji(t *testing.T) {
 		t.Fatalf("expected no emoji, got:\n%s", out)
 	}
 
-	// No debe aparecer el error de formato de fmt
 	if strings.Contains(out, "%!s(") {
 		t.Fatalf("format error found (%%!s()):\n%s", out)
 	}
 
-	// Debe contener partes clave
+	// It should contains key parts
 	for _, want := range []string{
-		"¡Buen día", // encabezado
+		"¡Buen día", // Header
 		"Fecha:",
 		"Hoy:",
 		"max:",
@@ -117,7 +116,7 @@ func TestRender_ColorEmoji(t *testing.T) {
 	now := time.Now().Unix()
 
 	var w weatherapi.Weather
-	// Usamos "Soleado" para forzar ☀️ en pickConditionEmoji
+	// User "Soleado" to force ☀️ in pickConditionEmoji
 	payload := fmt.Sprintf(`{
       "location": {"name":"Madrid","country":"Spain"},
       "current": {
@@ -168,7 +167,7 @@ func TestRender_ColorEmoji(t *testing.T) {
 
 	out := buf.String()
 
-	// Debe haber ANSI y al menos un emoji (☀️ por "Soleado")
+	// There should be an ANSI seq and at least one emoji (☀️ por "Sunny")
 	if !containsANSI(out) {
 		t.Fatalf("expected ANSI sequences (color) in output, got:\n%s", out)
 	}
@@ -176,12 +175,12 @@ func TestRender_ColorEmoji(t *testing.T) {
 		t.Fatalf("expected emoji in output, got:\n%s", out)
 	}
 
-	// No debe aparecer el error de formato de fmt
+	// fmt should be correct
 	if strings.Contains(out, "%!s(") {
 		t.Fatalf("format error found (%%!s()):\n%s", out)
 	}
 
-	// Algunas comprobaciones de contenido
+	// Random checks in the content
 	for _, want := range []string{
 		"Hoy:",
 		"max:",
