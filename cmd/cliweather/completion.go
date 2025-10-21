@@ -49,7 +49,7 @@ PowerShell:
 		case "powershell":
 			return rootCmd.GenPowerShellCompletionWithDesc(os.Stdout)
 		default:
-			return fmt.Errorf("Unsupported shell: %s", shell)
+			return fmt.Errorf("unsupported shell: %s", shell)
 		}
 	},
 }
