@@ -94,7 +94,7 @@ var forecastCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(forecastCmd)
 
-	forecastCmd.Flags().StringVarP(&flagCity, "city", "c", "Vigo", "City name or query")
+	forecastCmd.Flags().StringVarP(&flagCity, "city", "c", "", "City name")
 	forecastCmd.Flags().IntVarP(&flagDays, "days", "d", 1, "Forecast days (1-3 on free tier)")
 	forecastCmd.Flags().StringVarP(&flagLang, "lang", "l", "en", "Language (e.g., es, en, fr)")
 	forecastCmd.Flags().StringVar(&flagAPIKey, "apikey", "", "WeatherAPI key (or set WEATHER_API_KEY)")
