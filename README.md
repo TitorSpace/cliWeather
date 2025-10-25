@@ -1,6 +1,8 @@
 # Let's GO-outside
 A fast and easy-to-use command line tool written in Go that delivers real time weather forecasts straigth to your terminal.
 
+<br>
+
 ## Table of Contents
 - Introduction
 - Features
@@ -19,7 +21,7 @@ A fast and easy-to-use command line tool written in Go that delivers real time w
 - Friendly and accessible CLI
 - Extensible design
 
-<br><br>
+<br>
 
 ## Installation
 In case you want to do some modifications in the code or just reproduce the generation of the binary, you will just have to follow these setps:
@@ -56,7 +58,7 @@ In case you want to do some modifications in the code or just reproduce the gene
         ```
 6. Enjoy :)
 
-<br><br>
+<br>
 
 ## Usage
 Let's start explaining the commands that the CLI have:
@@ -69,7 +71,6 @@ Let's start explaining the commands that the CLI have:
         ```
         cliweather --no-emoji forecast
         ```
-<br><br>
 - **completion**: This command is designed to generate shell autocompletion scripts for various shells: **Bash**, **Zsh** and **Fish**. This improves the user experience by enabling tab-completion for commans, flags and args. Example of use:
     ```
     cliweather completion bash
@@ -110,7 +111,7 @@ Let's start explaining the commands that the CLI have:
 <br><br>
     ![Result](images/query_result.png)
 
-<br><br>
+<br>
 
 ## Technologies Used
 - Golang
@@ -125,4 +126,4 @@ Pull requests are welcome!
 For major changes, please open an issue first to discuss what you would like yo change.
 
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
