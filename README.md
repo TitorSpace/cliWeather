@@ -62,13 +62,35 @@ Let's start explaining the commands that the CLI have:
 
 ## How to reproduce
 In case you want to do some modifications in the code or just reproduce the generation of the binary, you will just have to follow these setps:
-1. Install go version 1.24.7 according to your operative system.
-    - After installation you can check the version with this command:
-        ```
-        go version
-        ```
-2. Install al dependencies withÑ
+1. Create your work directory and move inside it:
+    ```
+    mkdir workspace
+    cd workspace
+    ```
+2. Clone the repo and move inside it
+    ```
+    git clone repo_url
+    cd repo
+    ```
+3. Install go 1.24.7 according to your O.S.
+4. Fetch all needed dependencies from go.mod:
     ```
     go mod tidy
     ```
-3. Please be aware that my current binary is in a **Linux amd**
+5. Please be aware that my current binary is built on **Linux** and if you want yo run it you will have to set these env variables according to your OS:
+    - Linux: 
+        ```
+        GOOS=linux
+        GOARCH=amd64
+        ```
+    - Windows: 
+        ```
+        GOOS=windows
+        GOARCH=amd64
+        ```
+    - Mac: 
+        ```
+        GOOS=darwin
+        GOARCH=amd64
+        ```
+6. Enjoy :)
